@@ -1,7 +1,6 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
 import { encryptPassword } from '../../bcrypt/index'
-import { v4 as uuidv4 } from 'uuid'
 import { signupBodySchema } from '../../schemas/index'
 
 import middy from '@middy/core'
@@ -42,7 +41,6 @@ async function userSignup(body: userSignupRequestBody): Promise<any> {
         Item: {
             userId: username,
             itemId: 'registration',
-            id: uuidv4(),
             password: hashedPassword,
             email,
             createdAt: today.toLocaleString()

@@ -10,9 +10,17 @@ export interface QuizItem {
   leaderboard: Score[]
 }
 
+export interface FormattedQuizItem {
+  createdBy: string;
+  id: string;
+  createdAt: string;
+  name: string;
+  questions: Question[],
+  leaderboard: Score[]
+}
+
 export interface Question {
   question: string;
-  alternatives: string[];
   correctAnswer: string;
   coordinates: {
     longitude: string;
@@ -58,10 +66,10 @@ export type MiddyRequest = {
 
 export interface ResponseBody {
     success: boolean;
-    quizzes?: QuizItem[];
+    quizzes?: QuizItem[] | FormattedQuizItem[];
     message?: string;
-    updatedQuiz?: QuizItem;
-    newQuiz?: QuizItem;
+    updatedQuiz?: QuizItem | FormattedQuizItem;
+    newQuiz?: QuizItem | FormattedQuizItem;
     token?: string;
 }
 

@@ -8,23 +8,23 @@ import { errorHandler } from '../../middleware/errorHandler'
 import { v4 as uuidv4 } from 'uuid'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { QuizItem } from "../../types/index"
+import { QuizItem, Question } from "../../types/index"
 
 type postQuizRequestBody = {
     userId: string;
-    itemId: string;
     name: string;
+    questions: Question[];
 }
 
 async function createQuiz(body: postQuizRequestBody) {
-    const { name, userId } = body
+    const { name, userId, questions } = body
     const itemId = uuidv4()
     const today = new Date()
     const item: QuizItem = {
         userId,
         itemId: `quiz-${itemId.slice(0, 10)}`,
         name,
-        questions: [],
+        questions,
         leaderboard: [],
         createdAt: today.toLocaleString(),
     }
@@ -34,7 +34,16 @@ async function createQuiz(body: postQuizRequestBody) {
         Item: {...item}
     }).promise()
 
-    return sendResponse({ success: true, newQuiz: {...item} })
+    const formattedItem = {
+        createdBy: item.userId,
+        id: item.itemId,
+        name: item.name,
+        questions: [...item.questions],
+        leaderboard: [...item.leaderboard],
+        createdAt: item.createdAt,
+    }
+
+    return sendResponse({ success: true, newQuiz: {...formattedItem } })
 }
 
 export const handler = middy()

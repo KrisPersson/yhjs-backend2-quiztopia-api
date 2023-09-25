@@ -30,7 +30,7 @@ async function userLogin(body: userLoginRequestBody): Promise<any> {
     const passwordDoesMatch = await comparePassword(password, Item?.password)
     if (!Item || !passwordDoesMatch) return sendError(401, 'Wrong username/password combination')
 
-    const token = jwt.sign({ id: Item.id, userId: Item.userId }, 'a1b1c1', {
+    const token = jwt.sign({ userId: Item.userId }, 'a1b1c1', {
         expiresIn: 864000
     })
 
