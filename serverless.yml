@@ -1,0 +1,88 @@
+service: yhjs-backend2-quiztopia-api
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  profile: ${env:PROFILE}
+  region: eu-north-1
+  iam:
+    role: ${env:LAMBDA_ROLE}
+  deploymentMethod: direct
+
+useDotenv: true
+
+plugins:
+  - serverless-webpack
+
+package:
+  individually: true
+
+functions:
+  getQuizzes:
+    handler: dist/functions/getQuizzes/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: GET
+  createQuiz:
+    handler: dist/functions/createQuiz/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: POST
+  updateQuiz:
+    handler: dist/functions/updateQuiz/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: PUT
+  deleteQuiz:
+    handler: dist/functions/deleteQuiz/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz'
+        method: DELETE
+  userSignup:
+    handler: dist/functions/userSignup/index.handler
+    events:
+    - httpApi:
+        path: '/api/user/signup'
+        method: POST
+  userLogin:
+    handler: dist/functions/userLogin/index.handler
+    events:
+    - httpApi:
+        path: '/api/user/login'
+        method: POST
+  submitScore:
+    handler: dist/functions/submitScore/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz/leaderboard'
+        method: POST
+  getLeaderboard:
+    handler: dist/functions/getLeaderboard/index.handler
+    events:
+    - httpApi:
+        path: '/api/quiz/leaderboard'
+        method: GET
+
+resources:
+  Resources: 
+      quiztopiaDb:
+          Type: AWS::DynamoDB::Table
+          Properties: 
+              TableName: quiztopia-db
+              AttributeDefinitions:
+                  - AttributeName: userId
+                    AttributeType: S
+                  - AttributeName: itemId
+                    AttributeType: S
+              KeySchema:
+                  - AttributeName: userId
+                    KeyType: HASH
+                  - AttributeName: itemId
+                    KeyType: RANGE
+              BillingMode: PAY_PER_REQUEST
+              
