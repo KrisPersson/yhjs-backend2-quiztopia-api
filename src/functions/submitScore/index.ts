@@ -8,6 +8,7 @@ import { errorHandler } from '../../middleware/errorHandler'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { QuizItem, Score } from "../../types/index"
+import { sortLeaderboard } from '../../utils'
 
 type submitScoreRequestBody = {
     quizCreatorId: string;
@@ -46,7 +47,7 @@ async function submitScore(body: submitScoreRequestBody) {
         }
       }).promise()
 
-    return sendResponse({ success: true, leaderboard })
+    return sendResponse({ success: true, leaderboard: sortLeaderboard(leaderboard) })
 }
 
 export const handler = middy()

@@ -61,12 +61,6 @@ functions:
     - httpApi:
         path: '/api/quiz/leaderboard'
         method: POST
-  getLeaderboard:
-    handler: dist/functions/getLeaderboard/index.handler
-    events:
-    - httpApi:
-        path: '/api/quiz/leaderboard'
-        method: GET
 
 resources:
   Resources: 

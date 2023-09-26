@@ -5,6 +5,7 @@ import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
 import { errorHandler } from '../../middleware/errorHandler'
+import { sortLeaderboard } from '../../utils'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { QuizItem } from "../../types/index"
@@ -54,7 +55,7 @@ async function updateQuiz(body: updateQuizRequestBody) {
         id: Item?.itemId,
         name: Item?.name,
         questions: [...questions],
-        leaderboard: [...Item?.leaderboard],
+        leaderboard: [...sortLeaderboard(Item?.leaderboard)],
         createdAt: Item?.createdAt,
       }
 

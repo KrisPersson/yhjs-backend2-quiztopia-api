@@ -6,6 +6,7 @@ import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
 import { errorHandler } from '../../middleware/errorHandler'
 import { v4 as uuidv4 } from 'uuid'
+import { sortLeaderboard } from "../../utils"
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 import { QuizItem, Question } from "../../types/index"
@@ -39,7 +40,7 @@ async function createQuiz(body: postQuizRequestBody) {
         id: item.itemId,
         name: item.name,
         questions: [...item.questions],
-        leaderboard: [...item.leaderboard],
+        leaderboard: [...sortLeaderboard(item.leaderboard)],
         createdAt: item.createdAt,
     }
 

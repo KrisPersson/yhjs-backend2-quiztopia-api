@@ -7,6 +7,7 @@ import middy from '@middy/core'
 
 import { APIGatewayProxyResult } from "aws-lambda"
 import { MiddyEvent, QuizItem } from "../../types/index"
+import { sortLeaderboard } from "../../utils"
 
 async function getQuizzes() {
 
@@ -29,7 +30,7 @@ async function getQuizzes() {
             createdAt: quiz.createdAt,
             name: quiz.name,
             questions: [...quiz.questions],
-            leaderboard: [...quiz.leaderboard]
+            leaderboard: [...sortLeaderboard(quiz.leaderboard)]
         }
     })
 

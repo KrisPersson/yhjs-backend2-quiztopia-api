@@ -23,14 +23,13 @@ async function deleteQuiz(body: deleteQuizRequestBody) {
 
     if (!Item) sendError(404, 'Quiz could not be found')
 
-    const response = await db.delete({
+    await db.delete({
         TableName: 'quiztopia-db',
         Key: {
             userId,
             itemId: quizId
         }
     }).promise()
-    console.log(response)
     return sendResponse({ success: true, message: 'Quiz successfully deleted!' })
 }
 
