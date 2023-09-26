@@ -29,7 +29,7 @@ export interface Question {
 }
 
 export interface Score {
-  playerName: string;
+  playerId: string;
   amtPoints: number;
   completedAt: string;
 }
@@ -71,6 +71,7 @@ export interface ResponseBody {
     updatedQuiz?: QuizItem | FormattedQuizItem;
     newQuiz?: QuizItem | FormattedQuizItem;
     token?: string;
+    leaderboard?: Score[];
 }
 
 export type SendResponse = {
