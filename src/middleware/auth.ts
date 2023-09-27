@@ -11,7 +11,6 @@ export const validateToken = {
             const data = jwt.verify(token, 'a1b1c1') as jwt.JwtPayload
             if (!data.userId) sendError(401, 'Invalid token')
             if (providedUserId && providedUserId !== data.userId) sendError(401, 'Provided userId does not match currently logged-in user')
-            request.event.id = data.id
             request.event.userId = data.userId
         } catch (error) {
             sendError(401, 'Invalid token')

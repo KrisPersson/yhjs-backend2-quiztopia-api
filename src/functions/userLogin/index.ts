@@ -3,18 +3,17 @@ import jwt from 'jsonwebtoken'
 
 import { sendResponse, sendError } from '../../responses/index'
 import { comparePassword } from '../../bcrypt/index'
-import { loginBodySchema } from '../../schemas/index'
 import middy from '@middy/core'
 import { errorHandler } from '../../middleware/errorHandler'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
+import { userLoginRequestBodySchema } from "../../schemas/requestSchemas"
+import { z } from "zod"
+import { zodValidation } from '../../middleware/zodValidation'
 
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 
-type userLoginRequestBody = {
-    username: string;
-    password: string;
-}
+type userLoginRequestBody = z.infer<typeof userLoginRequestBodySchema>
 
 async function userLogin(body: userLoginRequestBody): Promise<any> {
     const { username, password } = body
@@ -41,6 +40,7 @@ async function userLogin(body: userLoginRequestBody): Promise<any> {
 export const handler = middy()
     
     .use(httpJsonBodyParser())
+    .use(zodValidation(userLoginRequestBodySchema))
     .use(errorHandler())
     .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)

@@ -1,4 +1,4 @@
-import { Score } from "./types/index"
+import { Score } from "./schemas/index"
 
 export function sortLeaderboard(leaderboard: Score[]) {
     const sortedLeaderboard = [...leaderboard]

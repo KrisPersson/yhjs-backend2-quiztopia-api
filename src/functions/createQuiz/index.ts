@@ -1,6 +1,5 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
-import { postBodySchema } from '../../schemas/index'
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
@@ -9,13 +8,14 @@ import { v4 as uuidv4 } from 'uuid'
 import { sortLeaderboard } from "../../utils"
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { QuizItem, Question } from "../../types/index"
 
-type postQuizRequestBody = {
-    userId: string;
-    name: string;
-    questions: Question[];
-}
+import { postQuizRequestBodySchema } from '../../schemas/requestSchemas'
+import { QuizItem } from '../../schemas/index'
+import { FormattedQuizItem } from "../../types/index"
+import { zodValidation } from '../../middleware/zodValidation'
+import { z } from "zod"
+
+type postQuizRequestBody = z.infer<typeof postQuizRequestBodySchema>
 
 async function createQuiz(body: postQuizRequestBody) {
     const { name, userId, questions } = body
@@ -35,7 +35,7 @@ async function createQuiz(body: postQuizRequestBody) {
         Item: {...item}
     }).promise()
 
-    const formattedItem = {
+    const formattedItem: FormattedQuizItem = {
         createdBy: item.userId,
         id: item.itemId,
         name: item.name,
@@ -51,6 +51,7 @@ export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validateToken)
+    .use(zodValidation(postQuizRequestBodySchema))
     .use(errorHandler())
     .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)

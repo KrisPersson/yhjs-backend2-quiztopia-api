@@ -1,17 +1,16 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
-import { deleteBodySchema } from '../../schemas/index'
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
 import { errorHandler } from '../../middleware/errorHandler'
-
+import { z } from "zod"
+import { zodValidation } from '../../middleware/zodValidation'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 
-type deleteQuizRequestBody = {
-    userId: string;
-    quizId: string;
-}
+import { deleteQuizRequestBodySchema } from "../../schemas/requestSchemas"
+
+type deleteQuizRequestBody = z.infer<typeof deleteQuizRequestBodySchema>
 
 async function deleteQuiz(body: deleteQuizRequestBody) {
     const { userId, quizId } = body
@@ -37,6 +36,7 @@ export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validateToken)
+    .use(zodValidation(deleteQuizRequestBodySchema))
     .use(errorHandler())
     .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)

@@ -1,6 +1,8 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
-import { editBodySchema } from '../../schemas/index'
+import { QuizItem } from '../../schemas/index'
+import { updateQuizRequestBodySchema } from '../../schemas/requestSchemas'
+
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
@@ -8,18 +10,10 @@ import { errorHandler } from '../../middleware/errorHandler'
 import { sortLeaderboard } from '../../utils'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { QuizItem } from "../../types/index"
+import { z } from "zod"
+import { zodValidation } from '../../middleware/zodValidation'
 
-type updateQuizRequestBody = {
-    userId: string;
-    quizId: string;
-    question: string;
-    correctAnswer: string;
-    coordinates: {
-        longitude: string;
-        latitude: string;
-    }
-}
+type updateQuizRequestBody = z.infer<typeof updateQuizRequestBodySchema>
 
 async function updateQuiz(body: updateQuizRequestBody) {
     const { question, correctAnswer, userId, quizId, coordinates } = body
@@ -66,6 +60,7 @@ export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validateToken)
+    .use(zodValidation(updateQuizRequestBodySchema))
     .use(errorHandler())
     .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)

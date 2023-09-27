@@ -1,21 +1,20 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
-import { postBodySchema } from '../../schemas/index'
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
 import { errorHandler } from '../../middleware/errorHandler'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { QuizItem, Score } from "../../types/index"
-import { sortLeaderboard } from '../../utils'
+import { QuizItem, Score } from "../../schemas/index"
+import { submitScoreRequestBodySchema} from "../../schemas/requestSchemas"
+import { zodValidation } from '../../middleware/zodValidation'
 
-type submitScoreRequestBody = {
-    quizCreatorId: string;
-    quizId: string;
-    playerId: string;
-    amtPoints: number;
-}
+import { sortLeaderboard } from '../../utils'
+import { z } from "zod"
+import { MiddyEvent } from '../../types'
+
+type submitScoreRequestBody = z.infer<typeof submitScoreRequestBodySchema>
 
 async function submitScore(body: submitScoreRequestBody) {
     const { quizCreatorId, quizId, playerId, amtPoints } = body
@@ -54,9 +53,12 @@ export const handler = middy()
     
     .use(httpJsonBodyParser())
     .use(validateToken)
+    .use(zodValidation(submitScoreRequestBodySchema))
     .use(errorHandler())
-    .handler(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    .handler(async (event: MiddyEvent): Promise<APIGatewayProxyResult> => {
         console.log(event)
         const body = event.body as unknown as submitScoreRequestBody
+        if (event?.userId !== body.playerId) sendError(401, 'Only logged in user may submit score')
+
         return await submitScore(body)
     })

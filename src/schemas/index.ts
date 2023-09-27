@@ -1,129 +1,28 @@
-export const postBodySchema = {
-    type: 'object',
-    properties: {
-      body: {
-        type: 'object',
-        required: ['title', 'text'],
-        properties: {
-            userId: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-                },
-            title: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-            },
-            text: {
-                type: 'string',
-                minLength: 0,
-                maxLength: 300
-            }
-        }
-      }
-    }
-}
+import { z } from "zod"
 
-export const editBodySchema = {
-    type: 'object',
-    properties: {
-      body: {
-        type: 'object',
-        required: ['title', 'text', 'userId', 'noteId'],
-        properties: {
-            userId: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-                },
-            noteId: {
-                type: 'string',
-                minLength: 10,
-                maxLength: 20
-            },
-            title: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-            },
-            text: {
-                type: 'string',
-                minLength: 0,
-                maxLength: 300
-            }
-        }
-      }
-    }
-}
+export const questionSchema = z.object({
+  question: z.string(),
+  correctAnswer: z.string(),
+  coordinates: z.object({
+    longitude: z.string(),
+    latitude: z.string()
+  })
+})
+export type Question = z.infer<typeof questionSchema>
 
-export const deleteBodySchema = {
-    type: 'object',
-    properties: {
-      body: {
-        type: 'object',
-        required: ['userId', 'noteId'],
-        properties: {
-            userId: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-                },
-            noteId: {
-                type: 'string',
-                minLength: 10,
-                maxLength: 20
-            }
-        }
-      }
-    }
-}
+export const scoreSchema = z.object({
+  playerId: z.string(),
+  amtPoints: z.number(),
+  completedAt: z.string(),
+})
+export type Score = z.infer<typeof scoreSchema>
 
-export const loginBodySchema = {
-    type: 'object',
-    properties: {
-      body: {
-        type: 'object',
-        required: ['username', 'password'],
-        properties: {
-            username: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-                },
-            password: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 40
-            }
-        }
-      }
-    }
-}
-
-export const signupBodySchema = {
-    type: 'object',
-    properties: {
-      body: {
-        type: 'object',
-        required: ['username', 'password', 'email'],
-        properties: {
-            username: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 50
-            },
-            password: {
-                type: 'string',
-                minLength: 1,
-                maxLength: 40
-            },
-            email: {
-                type: 'string',
-                minLength: 5,
-                maxLength: 50
-            }
-        }
-      }
-    }
-}
+export const quizItemSchema = z.object({
+  userId: z.string(),
+  itemId: z.string(),
+  createdAt: z.string(),
+  name: z.string(),
+  questions: z.array(questionSchema),
+  leaderboard: z.array(scoreSchema)
+})
+export type QuizItem = z.infer<typeof quizItemSchema>

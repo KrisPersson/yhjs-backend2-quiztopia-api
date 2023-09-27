@@ -1,19 +1,18 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
 import { encryptPassword } from '../../bcrypt/index'
-import { signupBodySchema } from '../../schemas/index'
 
 import middy from '@middy/core'
 import { errorHandler } from '../../middleware/errorHandler'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
+import { z } from "zod"
+import { zodValidation } from '../../middleware/zodValidation'
+
+import { userSignupRequestBodySchema } from '../../schemas/requestSchemas'
 
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
 
-type userSignupRequestBody = {
-    username: string;
-    password: string;
-    email: string;
-}
+type userSignupRequestBody = z.infer<typeof userSignupRequestBodySchema>
 
 async function userSignup(body: userSignupRequestBody): Promise<any> {
     const { username, password, email } = body
@@ -53,6 +52,7 @@ async function userSignup(body: userSignupRequestBody): Promise<any> {
 export const handler = middy()
     
     .use(httpJsonBodyParser())
+    .use(zodValidation(userSignupRequestBodySchema))
     .use(errorHandler())
     .handler(async (event: APIGatewayProxyEvent ): Promise<APIGatewayProxyResult> => {
         console.log(event)
