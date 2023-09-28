@@ -1,7 +1,8 @@
 import { db } from '../../services/index'
 import { sendResponse, sendError } from '../../responses/index'
-import { QuizItem } from '../../schemas/index'
+import { Question, QuizItem } from '../../schemas/index'
 import { updateQuizRequestBodySchema } from '../../schemas/requestSchemas'
+import { FormattedQuizItem } from '../../types'
 
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
@@ -25,13 +26,13 @@ async function updateQuiz(body: updateQuizRequestBody) {
 
     if (!Item) sendError(404, 'Quiz could not be found')
 
-    const newQuestion = {
+    const newQuestion: Question = {
         question,
         correctAnswer,
         coordinates
     }
 
-    const questions = [...Item?.questions]
+    const questions: Question[] = [...Item?.questions]
     questions.push({...newQuestion})
 
     await db.update({
@@ -44,7 +45,7 @@ async function updateQuiz(body: updateQuizRequestBody) {
         }
       }).promise()
 
-      const updatedQuiz = {
+      const updatedQuiz: FormattedQuizItem = {
         createdBy: Item?.userId,
         id: Item?.itemId,
         name: Item?.name,
@@ -67,4 +68,3 @@ export const handler = middy()
         const body = event.body as unknown as updateQuizRequestBody
         return await updateQuiz(body)
     })
-

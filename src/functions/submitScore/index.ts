@@ -5,8 +5,8 @@ import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'
 import { errorHandler } from '../../middleware/errorHandler'
 
-import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda"
-import { QuizItem, Score } from "../../schemas/index"
+import { APIGatewayProxyResult } from "aws-lambda"
+import { Score } from "../../schemas/index"
 import { submitScoreRequestBodySchema} from "../../schemas/requestSchemas"
 import { zodValidation } from '../../middleware/zodValidation'
 
@@ -33,7 +33,7 @@ async function submitScore(body: submitScoreRequestBody) {
         completedAt: today.toLocaleString()
     }
 
-    const leaderboard = [...Item?.leaderboard]
+    const leaderboard: Score[] = [...Item?.leaderboard]
     leaderboard.push({...scoreItem})
 
     await db.update({

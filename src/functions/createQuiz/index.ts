@@ -1,5 +1,5 @@
 import { db } from '../../services/index'
-import { sendResponse, sendError } from '../../responses/index'
+import { sendResponse } from '../../responses/index'
 import { validateToken } from '../../middleware/auth'
 import middy from '@middy/core'
 import httpJsonBodyParser from '@middy/http-json-body-parser'

@@ -14,7 +14,9 @@ export const postQuizRequestBodySchema = z.object({
             invalid_type_error: "name must be a string."
         })
         .min(1),
-    questions: z.array(questionSchema)
+    questions: z
+        .array(questionSchema)
+        .min(1)
 })
 
 

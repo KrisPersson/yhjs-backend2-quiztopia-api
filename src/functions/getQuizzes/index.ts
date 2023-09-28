@@ -6,12 +6,9 @@ import { validateGetHeaders } from "../../middleware/index"
 import middy from '@middy/core'
 
 import { APIGatewayProxyResult } from "aws-lambda"
-import { MiddyEvent} from "../../types/index"
+import { MiddyEvent, FormattedQuizItem } from "../../types/index"
 import { QuizItem } from "../../schemas/index"
-import { FormattedQuizItem } from '../../types/index'
 import { sortLeaderboard } from "../../utils"
-
-
 
 async function getQuizzes() {
 
@@ -27,7 +24,7 @@ async function getQuizzes() {
     }).promise()
 
     const quizzes = query?.Items as QuizItem[]
-    const formattedQuizzes = quizzes.map(quiz => {
+    const formattedQuizzes: FormattedQuizItem[] = quizzes.map(quiz => {
         return {
             createdBy: quiz.userId,
             id: quiz.itemId,
